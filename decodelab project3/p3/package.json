@@ -1,0 +1,11 @@
+{
+  "name": "decodelabs-project3",
+  "version": "1.0.0",
+  "description": "DecodeLabs Project 3 - Database Integration",
+  "main": "server.js",
+  "scripts": {
+    "start": "node --experimental-sqlite server.js"
+  },
+  "license": "MIT",
+  "engines": { "node": ">=22.0.0" }
+}

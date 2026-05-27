@@ -1,0 +1,1667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DigitalCraft — DecodeLabs Project 1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;900&family=Lora:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet" />
+  <style>
+    /* ═══════════════════════════════════════════
+       CSS CUSTOM PROPERTIES — 2025 PALETTE
+    ═══════════════════════════════════════════ */
+    :root {
+      --mocha:       #A5856E;
+      --mocha-dark:  #7a5f4e;
+      --mocha-light: #c9a990;
+      --blue:        #A0D4E0;
+      --blue-dark:   #6eb8ca;
+      --blue-deep:   #3a8fa3;
+      --grey:        #F2F0EA;
+      --grey-mid:    #d8d4cc;
+      --grey-dark:   #9e9a93;
+      --ink:         #2c2420;
+      --ink-light:   #5a524c;
+      --white:       #fefcfa;
+
+      --font-head: 'Montserrat', sans-serif;
+      --font-body: 'Lora', serif;
+
+      --nav-h: 64px;
+      --radius: 12px;
+      --radius-lg: 24px;
+      --shadow: 0 4px 24px rgba(44,36,32,.10);
+      --shadow-lg: 0 12px 48px rgba(44,36,32,.16);
+
+      --transition: .35s cubic-bezier(.4,0,.2,1);
+    }
+
+    /* ═══════════════════════════════════════════
+       RESET & BASE
+    ═══════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--white);
+      color: var(--ink);
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    img { display: block; max-width: 100%; }
+    a  { color: inherit; text-decoration: none; }
+    ul { list-style: none; }
+    button { cursor: pointer; border: none; background: none; font: inherit; }
+
+    /* ═══════════════════════════════════════════
+       UTILITY CLASSES
+    ═══════════════════════════════════════════ */
+    .container {
+      width: min(92%, 1160px);
+      margin-inline: auto;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      padding: .75rem 1.6rem;
+      border-radius: 50px;
+      font-family: var(--font-head);
+      font-weight: 700;
+      font-size: .875rem;
+      letter-spacing: .04em;
+      transition: var(--transition);
+    }
+    .btn-primary {
+      background: var(--mocha);
+      color: var(--white);
+      box-shadow: 0 4px 16px rgba(165,133,110,.35);
+    }
+    .btn-primary:hover {
+      background: var(--mocha-dark);
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(165,133,110,.45);
+    }
+    .btn-outline {
+      background: transparent;
+      color: var(--mocha);
+      border: 2px solid var(--mocha);
+    }
+    .btn-outline:hover {
+      background: var(--mocha);
+      color: var(--white);
+      transform: translateY(-2px);
+    }
+    .tag {
+      display: inline-block;
+      padding: .25rem .8rem;
+      background: var(--grey);
+      color: var(--ink-light);
+      border-radius: 50px;
+      font-family: var(--font-head);
+      font-size: .75rem;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+    .section-label {
+      font-family: var(--font-head);
+      font-size: .75rem;
+      font-weight: 700;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      color: var(--mocha);
+    }
+
+    /* ═══════════════════════════════════════════
+       FADE-IN ANIMATION
+    ═══════════════════════════════════════════ */
+    .fade-up {
+      opacity: 0;
+      transform: translateY(32px);
+      transition: opacity .7s ease, transform .7s ease;
+    }
+    .fade-up.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* ═══════════════════════════════════════════
+       NAVIGATION
+    ═══════════════════════════════════════════ */
+    .nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      height: var(--nav-h);
+      background: rgba(254,252,250,.88);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--grey-mid);
+      transition: box-shadow var(--transition);
+    }
+    .nav.scrolled { box-shadow: var(--shadow); }
+
+    .nav__inner {
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .nav__logo {
+      font-family: var(--font-head);
+      font-weight: 900;
+      font-size: 1.2rem;
+      letter-spacing: -.02em;
+      color: var(--ink);
+    }
+    .nav__logo span { color: var(--mocha); }
+
+    .nav__links {
+      display: none;
+      gap: 2rem;
+      align-items: center;
+    }
+    .nav__links a {
+      font-family: var(--font-head);
+      font-size: .875rem;
+      font-weight: 600;
+      color: var(--ink-light);
+      transition: color var(--transition);
+      position: relative;
+    }
+    .nav__links a::after {
+      content: '';
+      position: absolute;
+      bottom: -4px; left: 0;
+      width: 0; height: 2px;
+      background: var(--mocha);
+      border-radius: 2px;
+      transition: width var(--transition);
+    }
+    .nav__links a:hover { color: var(--mocha); }
+    .nav__links a:hover::after { width: 100%; }
+
+    .nav__actions { display: none; gap: .75rem; align-items: center; }
+
+    .nav__hamburger {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      width: 28px;
+      padding: 4px;
+    }
+    .nav__hamburger span {
+      display: block;
+      height: 2px;
+      background: var(--ink);
+      border-radius: 2px;
+      transition: var(--transition);
+    }
+    .nav__hamburger.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .nav__hamburger.active span:nth-child(2) { opacity: 0; }
+    .nav__hamburger.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+    /* Mobile menu */
+    .nav__mobile {
+      position: fixed;
+      top: var(--nav-h); left: 0; right: 0;
+      background: var(--white);
+      padding: 1.5rem;
+      border-bottom: 1px solid var(--grey-mid);
+      transform: translateY(-110%);
+      transition: transform var(--transition);
+      z-index: 99;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .nav__mobile.open { transform: translateY(0); }
+    .nav__mobile a {
+      font-family: var(--font-head);
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--ink);
+      padding: .5rem 0;
+      border-bottom: 1px solid var(--grey);
+    }
+
+    /* ═══════════════════════════════════════════
+       HERO
+    ═══════════════════════════════════════════ */
+    .hero {
+      margin-top: var(--nav-h);
+      min-height: calc(100svh - var(--nav-h));
+      display: grid;
+      place-items: center;
+      padding: 4rem 0 3rem;
+      position: relative;
+      overflow: hidden;
+      background:
+        radial-gradient(ellipse 70% 60% at 10% 80%, rgba(160,212,224,.28) 0%, transparent 70%),
+        radial-gradient(ellipse 60% 50% at 90% 20%, rgba(165,133,110,.15) 0%, transparent 70%),
+        var(--grey);
+    }
+
+    /* decorative blobs */
+    .hero::before, .hero::after {
+      content: '';
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(60px);
+      pointer-events: none;
+    }
+    .hero::before {
+      width: 500px; height: 500px;
+      top: -150px; right: -100px;
+      background: rgba(160,212,224,.25);
+    }
+    .hero::after {
+      width: 400px; height: 400px;
+      bottom: -150px; left: -100px;
+      background: rgba(165,133,110,.18);
+    }
+
+    .hero__grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 3rem;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero__eyebrow {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      margin-bottom: 1.25rem;
+    }
+    .hero__eyebrow-dot {
+      width: 8px; height: 8px;
+      background: var(--mocha);
+      border-radius: 50%;
+      animation: pulse 2s ease infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: .5; transform: scale(1.4); }
+    }
+
+    .hero__title {
+      font-family: var(--font-head);
+      font-weight: 900;
+      font-size: clamp(2.4rem, 8vw, 4.5rem);
+      line-height: 1.1;
+      letter-spacing: -.03em;
+      color: var(--ink);
+      margin-bottom: 1.25rem;
+    }
+    .hero__title em {
+      font-style: normal;
+      color: var(--mocha);
+      position: relative;
+    }
+    .hero__title em::after {
+      content: '';
+      position: absolute;
+      left: 0; bottom: 4px;
+      width: 100%; height: 6px;
+      background: var(--blue);
+      border-radius: 3px;
+      z-index: -1;
+    }
+
+    .hero__desc {
+      font-size: 1.1rem;
+      color: var(--ink-light);
+      max-width: 52ch;
+      margin-bottom: 2rem;
+    }
+
+    .hero__cta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .875rem;
+      align-items: center;
+    }
+
+    .hero__stats {
+      display: flex;
+      gap: 2rem;
+      margin-top: 2.5rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--grey-mid);
+    }
+    .hero__stat-num {
+      font-family: var(--font-head);
+      font-size: 1.75rem;
+      font-weight: 900;
+      color: var(--mocha);
+    }
+    .hero__stat-label {
+      font-size: .8rem;
+      color: var(--grey-dark);
+      font-family: var(--font-head);
+      font-weight: 600;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+    }
+
+    /* Hero visual card */
+    .hero__visual {
+      position: relative;
+    }
+    .hero__card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      border: 1px solid var(--grey-mid);
+    }
+    .hero__card-header {
+      background: var(--ink);
+      padding: .75rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+    }
+    .hero__card-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+    }
+    .hero__card-body {
+      padding: 1.5rem;
+      display: grid;
+      gap: 1rem;
+    }
+    .hero__code-line {
+      height: 10px;
+      border-radius: 5px;
+      background: var(--grey);
+      animation: shimmer 2.4s ease infinite;
+    }
+    @keyframes shimmer {
+      0%,100% { opacity: .5; }
+      50%      { opacity: 1; }
+    }
+    .hero__code-line:nth-child(1) { width: 80%; animation-delay: 0s; background: rgba(160,212,224,.5); }
+    .hero__code-line:nth-child(2) { width: 60%; animation-delay: .3s; }
+    .hero__code-line:nth-child(3) { width: 90%; animation-delay: .6s; background: rgba(165,133,110,.3); }
+    .hero__code-line:nth-child(4) { width: 50%; animation-delay: .9s; }
+    .hero__code-line:nth-child(5) { width: 75%; animation-delay: 1.2s; background: rgba(160,212,224,.4); }
+
+    .hero__badge {
+      position: absolute;
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: .75rem 1rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--grey-mid);
+      font-family: var(--font-head);
+      font-size: .8rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      color: var(--ink);
+    }
+    .hero__badge-icon {
+      width: 28px; height: 28px;
+      border-radius: 8px;
+      display: grid;
+      place-items: center;
+      font-size: 14px;
+    }
+    .hero__badge--1 {
+      top: -16px; right: 16px;
+    }
+    .hero__badge--2 {
+      bottom: -16px; left: 16px;
+    }
+
+    /* ═══════════════════════════════════════════
+       FEATURES STRIP
+    ═══════════════════════════════════════════ */
+    .strip {
+      background: var(--ink);
+      padding: 1.25rem 0;
+      overflow: hidden;
+    }
+    .strip__track {
+      display: flex;
+      gap: 3rem;
+      width: max-content;
+      animation: marquee 20s linear infinite;
+    }
+    @keyframes marquee {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+    .strip__item {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      color: var(--grey);
+      font-family: var(--font-head);
+      font-size: .875rem;
+      font-weight: 600;
+      letter-spacing: .04em;
+      white-space: nowrap;
+    }
+    .strip__dot { color: var(--mocha-light); font-size: 1.2rem; }
+
+    /* ═══════════════════════════════════════════
+       ABOUT / PHILOSOPHY
+    ═══════════════════════════════════════════ */
+    .about {
+      padding: 6rem 0;
+    }
+    .about__grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 3rem;
+      align-items: center;
+    }
+    .about__img-wrap {
+      position: relative;
+    }
+    .about__img-box {
+      background: linear-gradient(135deg, var(--blue) 0%, var(--mocha-light) 100%);
+      border-radius: var(--radius-lg);
+      aspect-ratio: 4/3;
+      display: grid;
+      place-items: center;
+      font-size: 5rem;
+    }
+    .about__img-card {
+      position: absolute;
+      background: var(--white);
+      border-radius: var(--radius);
+      padding: 1rem 1.25rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--grey-mid);
+    }
+    .about__img-card--1 { bottom: -20px; right: -16px; }
+    .about__img-card--2 { top: -20px; left: -16px; }
+    .about__card-value {
+      font-family: var(--font-head);
+      font-weight: 900;
+      font-size: 1.5rem;
+      color: var(--mocha);
+    }
+    .about__card-label {
+      font-family: var(--font-head);
+      font-size: .7rem;
+      font-weight: 600;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      color: var(--grey-dark);
+    }
+    .about__heading {
+      font-family: var(--font-head);
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 900;
+      line-height: 1.15;
+      letter-spacing: -.02em;
+      color: var(--ink);
+      margin: .75rem 0 1.25rem;
+    }
+    .about__text {
+      color: var(--ink-light);
+      margin-bottom: 1rem;
+      font-size: 1rem;
+    }
+    .about__pillars {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: .75rem;
+      margin-top: 1.75rem;
+    }
+    .about__pillar {
+      background: var(--grey);
+      border-radius: var(--radius);
+      padding: 1rem;
+      border-left: 3px solid var(--mocha);
+    }
+    .about__pillar-title {
+      font-family: var(--font-head);
+      font-weight: 700;
+      font-size: .875rem;
+      color: var(--ink);
+      margin-bottom: .25rem;
+    }
+    .about__pillar-text {
+      font-size: .8rem;
+      color: var(--ink-light);
+      line-height: 1.5;
+    }
+
+    /* ═══════════════════════════════════════════
+       SERVICES / SKILLS
+    ═══════════════════════════════════════════ */
+    .services {
+      padding: 6rem 0;
+      background: var(--grey);
+    }
+    .services__head {
+      text-align: center;
+      max-width: 540px;
+      margin: 0 auto 3.5rem;
+    }
+    .services__head h2 {
+      font-family: var(--font-head);
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 900;
+      letter-spacing: -.02em;
+      color: var(--ink);
+      margin: .75rem 0 .875rem;
+    }
+    .services__head p {
+      color: var(--ink-light);
+    }
+    .services__grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+    }
+    .service-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      border: 1px solid var(--grey-mid);
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+      cursor: default;
+    }
+    .service-card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(160,212,224,.1), rgba(165,133,110,.08));
+      opacity: 0;
+      transition: opacity var(--transition);
+    }
+    .service-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+    .service-card:hover::before { opacity: 1; }
+
+    .service-card__icon {
+      width: 52px; height: 52px;
+      border-radius: var(--radius);
+      background: var(--grey);
+      display: grid;
+      place-items: center;
+      font-size: 1.5rem;
+      margin-bottom: 1.25rem;
+      transition: var(--transition);
+    }
+    .service-card:hover .service-card__icon {
+      background: var(--mocha);
+      transform: scale(1.1) rotate(-5deg);
+    }
+    .service-card__num {
+      position: absolute;
+      top: 1.25rem; right: 1.5rem;
+      font-family: var(--font-head);
+      font-weight: 900;
+      font-size: 3rem;
+      color: var(--grey-mid);
+      line-height: 1;
+      pointer-events: none;
+    }
+    .service-card__title {
+      font-family: var(--font-head);
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--ink);
+      margin-bottom: .5rem;
+    }
+    .service-card__text {
+      font-size: .9rem;
+      color: var(--ink-light);
+      line-height: 1.65;
+    }
+    .service-card__tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .375rem;
+      margin-top: 1.25rem;
+    }
+
+    /* ═══════════════════════════════════════════
+       PROCESS / ROADMAP
+    ═══════════════════════════════════════════ */
+    .process {
+      padding: 6rem 0;
+    }
+    .process__head {
+      text-align: center;
+      max-width: 540px;
+      margin: 0 auto 3.5rem;
+    }
+    .process__head h2 {
+      font-family: var(--font-head);
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 900;
+      letter-spacing: -.02em;
+      color: var(--ink);
+      margin: .75rem 0 .875rem;
+    }
+    .process__head p { color: var(--ink-light); }
+
+    .process__list {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 0;
+      position: relative;
+    }
+    .process__list::before {
+      content: '';
+      position: absolute;
+      left: 24px;
+      top: 0; bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--mocha), var(--blue));
+    }
+    .process-step {
+      display: grid;
+      grid-template-columns: 50px 1fr;
+      gap: 1.5rem;
+      padding-bottom: 2.5rem;
+      position: relative;
+    }
+    .process-step:last-child { padding-bottom: 0; }
+    .process-step__num {
+      width: 50px; height: 50px;
+      border-radius: 50%;
+      background: var(--mocha);
+      color: var(--white);
+      font-family: var(--font-head);
+      font-weight: 900;
+      font-size: 1rem;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+      position: relative;
+      z-index: 1;
+      box-shadow: 0 0 0 6px var(--white), 0 0 0 8px var(--mocha);
+      transition: var(--transition);
+    }
+    .process-step:hover .process-step__num {
+      background: var(--blue-deep);
+      box-shadow: 0 0 0 6px var(--white), 0 0 0 8px var(--blue-deep);
+    }
+    .process-step__body {
+      padding-top: .625rem;
+    }
+    .process-step__title {
+      font-family: var(--font-head);
+      font-weight: 700;
+      font-size: 1.05rem;
+      color: var(--ink);
+      margin-bottom: .35rem;
+    }
+    .process-step__text {
+      font-size: .9rem;
+      color: var(--ink-light);
+      line-height: 1.65;
+    }
+
+    /* ═══════════════════════════════════════════
+       PORTFOLIO / PROJECTS
+    ═══════════════════════════════════════════ */
+    .projects {
+      padding: 6rem 0;
+      background: var(--ink);
+      color: var(--white);
+    }
+    .projects__head {
+      text-align: center;
+      max-width: 540px;
+      margin: 0 auto 3.5rem;
+    }
+    .projects__head .section-label { color: var(--blue); }
+    .projects__head h2 {
+      font-family: var(--font-head);
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 900;
+      letter-spacing: -.02em;
+      color: var(--white);
+      margin: .75rem 0 .875rem;
+    }
+    .projects__head p { color: var(--grey-dark); }
+
+    .projects__grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+    }
+    .project-card {
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.1);
+      transition: var(--transition);
+    }
+    .project-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(160,212,224,.35);
+      background: rgba(255,255,255,.09);
+    }
+    .project-card__thumb {
+      aspect-ratio: 16/9;
+      display: grid;
+      place-items: center;
+      font-size: 3.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .project-card__body { padding: 1.5rem; }
+    .project-card__tags {
+      display: flex; gap: .375rem; flex-wrap: wrap;
+      margin-bottom: .875rem;
+    }
+    .project-card__tags .tag {
+      background: rgba(255,255,255,.1);
+      color: var(--blue);
+    }
+    .project-card__title {
+      font-family: var(--font-head);
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--white);
+      margin-bottom: .5rem;
+    }
+    .project-card__text {
+      font-size: .875rem;
+      color: var(--grey-dark);
+      line-height: 1.65;
+    }
+    .project-card__link {
+      display: inline-flex;
+      align-items: center;
+      gap: .4rem;
+      margin-top: 1rem;
+      font-family: var(--font-head);
+      font-size: .8rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--blue);
+      transition: gap var(--transition);
+    }
+    .project-card__link:hover { gap: .75rem; }
+
+    /* ═══════════════════════════════════════════
+       TESTIMONIALS
+    ═══════════════════════════════════════════ */
+    .testimonials {
+      padding: 6rem 0;
+      background: var(--grey);
+    }
+    .testimonials__head {
+      text-align: center;
+      max-width: 540px;
+      margin: 0 auto 3.5rem;
+    }
+    .testimonials__head h2 {
+      font-family: var(--font-head);
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 900;
+      letter-spacing: -.02em;
+      color: var(--ink);
+      margin: .75rem 0 .875rem;
+    }
+    .testimonials__head p { color: var(--ink-light); }
+
+    .testimonials__grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.25rem;
+    }
+    .testi-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      padding: 2rem;
+      border: 1px solid var(--grey-mid);
+      position: relative;
+    }
+    .testi-card__quote {
+      font-size: 3.5rem;
+      line-height: 1;
+      color: var(--mocha-light);
+      font-family: Georgia, serif;
+      position: absolute;
+      top: 1rem; right: 1.5rem;
+    }
+    .testi-card__text {
+      font-style: italic;
+      color: var(--ink-light);
+      line-height: 1.75;
+      margin-bottom: 1.5rem;
+      font-size: .95rem;
+    }
+    .testi-card__author {
+      display: flex;
+      align-items: center;
+      gap: .875rem;
+    }
+    .testi-card__avatar {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+    .testi-card__name {
+      font-family: var(--font-head);
+      font-weight: 700;
+      font-size: .875rem;
+      color: var(--ink);
+    }
+    .testi-card__role {
+      font-size: .75rem;
+      color: var(--grey-dark);
+      font-family: var(--font-head);
+    }
+    .testi-card__stars { color: var(--mocha); font-size: .875rem; margin-bottom: .25rem; }
+
+    /* ═══════════════════════════════════════════
+       CTA BAND
+    ═══════════════════════════════════════════ */
+    .cta-band {
+      padding: 5rem 0;
+      background: linear-gradient(135deg, var(--mocha) 0%, var(--mocha-dark) 100%);
+      color: var(--white);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .cta-band::before {
+      content: '';
+      position: absolute;
+      width: 600px; height: 600px;
+      top: -300px; right: -200px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.06);
+    }
+    .cta-band::after {
+      content: '';
+      position: absolute;
+      width: 400px; height: 400px;
+      bottom: -200px; left: -100px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.04);
+    }
+    .cta-band__inner { position: relative; z-index: 1; }
+    .cta-band h2 {
+      font-family: var(--font-head);
+      font-size: clamp(1.8rem, 5vw, 3rem);
+      font-weight: 900;
+      letter-spacing: -.02em;
+      margin-bottom: .875rem;
+    }
+    .cta-band p {
+      color: rgba(255,255,255,.75);
+      max-width: 48ch;
+      margin: 0 auto 2rem;
+    }
+    .cta-band .btn-outline {
+      color: var(--white);
+      border-color: rgba(255,255,255,.6);
+    }
+    .cta-band .btn-outline:hover {
+      background: var(--white);
+      color: var(--mocha);
+    }
+
+    /* ═══════════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════════ */
+    footer {
+      background: var(--ink);
+      color: var(--grey-dark);
+      padding: 3.5rem 0 2rem;
+    }
+    .footer__grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+      margin-bottom: 3rem;
+    }
+    .footer__brand-name {
+      font-family: var(--font-head);
+      font-weight: 900;
+      font-size: 1.25rem;
+      color: var(--white);
+      margin-bottom: .625rem;
+    }
+    .footer__brand-name span { color: var(--mocha-light); }
+    .footer__brand-desc {
+      font-size: .875rem;
+      line-height: 1.65;
+      max-width: 32ch;
+      margin-bottom: 1.25rem;
+    }
+    .footer__socials { display: flex; gap: .75rem; }
+    .footer__social {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      background: rgba(255,255,255,.08);
+      display: grid;
+      place-items: center;
+      font-size: 1rem;
+      transition: var(--transition);
+    }
+    .footer__social:hover { background: var(--mocha); }
+
+    .footer__col-title {
+      font-family: var(--font-head);
+      font-weight: 700;
+      font-size: .8rem;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--grey-mid);
+      margin-bottom: 1rem;
+    }
+    .footer__links { display: flex; flex-direction: column; gap: .625rem; }
+    .footer__links a {
+      font-size: .875rem;
+      color: var(--grey-dark);
+      transition: color var(--transition);
+    }
+    .footer__links a:hover { color: var(--white); }
+
+    .footer__bottom {
+      padding-top: 2rem;
+      border-top: 1px solid rgba(255,255,255,.08);
+      display: flex;
+      flex-direction: column;
+      gap: .75rem;
+      align-items: center;
+      text-align: center;
+    }
+    .footer__bottom p { font-size: .8rem; }
+    .footer__bottom-links { display: flex; gap: 1.25rem; }
+    .footer__bottom-links a { font-size: .8rem; transition: color var(--transition); }
+    .footer__bottom-links a:hover { color: var(--white); }
+
+    /* ═══════════════════════════════════════════
+       SCROLL-TO-TOP
+    ═══════════════════════════════════════════ */
+    .scroll-top {
+      position: fixed;
+      bottom: 1.5rem; right: 1.5rem;
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: var(--mocha);
+      color: var(--white);
+      font-size: 1.25rem;
+      display: grid;
+      place-items: center;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      transform: translateY(12px);
+      transition: var(--transition);
+      z-index: 90;
+      pointer-events: none;
+    }
+    .scroll-top.show {
+      opacity: 1;
+      transform: none;
+      pointer-events: auto;
+    }
+    .scroll-top:hover { background: var(--mocha-dark); }
+
+    /* ═══════════════════════════════════════════
+       TABLET — 768px
+    ═══════════════════════════════════════════ */
+    @media (min-width: 768px) {
+      .nav__links   { display: flex; }
+      .nav__actions { display: flex; }
+      .nav__hamburger { display: none; }
+      .nav__mobile { display: none; }
+
+      .hero__grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+      }
+
+      .about__grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+      }
+
+      .services__grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .process__list::before { left: 24px; }
+
+      .projects__grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .testimonials__grid {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .footer__grid {
+        grid-template-columns: 1.5fr 1fr 1fr;
+      }
+      .footer__bottom {
+        flex-direction: row;
+        justify-content: space-between;
+        text-align: left;
+      }
+    }
+
+    /* ═══════════════════════════════════════════
+       DESKTOP — 1024px
+    ═══════════════════════════════════════════ */
+    @media (min-width: 1024px) {
+      .hero__grid   { gap: 5rem; }
+      .about__grid  { gap: 5rem; }
+
+      .services__grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .process__list {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 2rem;
+      }
+      .process__list::before {
+        top: 25px; left: 0; right: 0;
+        width: auto; height: 2px;
+        background: linear-gradient(to right, var(--mocha), var(--blue));
+      }
+      .process-step {
+        grid-template-columns: 1fr;
+        text-align: center;
+        padding-bottom: 0;
+      }
+      .process-step__num { margin-inline: auto; }
+
+      .projects__grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .testimonials__grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .footer__grid {
+        grid-template-columns: 2fr 1fr 1fr 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══════════ NAV ══════════ -->
+  <header>
+    <nav class="nav" id="navbar" role="navigation" aria-label="Main navigation">
+      <div class="container nav__inner">
+        <a href="#" class="nav__logo">Digital<span>Craft</span></a>
+
+        <ul class="nav__links" role="list">
+          <li><a href="#about">About</a></li>
+          <li><a href="#services">Skills</a></li>
+          <li><a href="#process">Roadmap</a></li>
+          <li><a href="#projects">Projects</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+
+        <div class="nav__actions">
+          <a href="#contact" class="btn btn-primary">Get Started →</a>
+        </div>
+
+        <button class="nav__hamburger" id="hamburger" aria-label="Toggle menu" aria-expanded="false">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- Mobile menu -->
+    <nav class="nav__mobile" id="mobileMenu" aria-label="Mobile navigation">
+      <a href="#about"    onclick="closeMobileMenu()">About</a>
+      <a href="#services" onclick="closeMobileMenu()">Skills</a>
+      <a href="#process"  onclick="closeMobileMenu()">Roadmap</a>
+      <a href="#projects" onclick="closeMobileMenu()">Projects</a>
+      <a href="#contact"  onclick="closeMobileMenu()">Contact</a>
+    </nav>
+  </header>
+
+  <!-- ══════════ MAIN ══════════ -->
+  <main>
+
+    <!-- HERO -->
+    <section class="hero" id="home" aria-labelledby="hero-title">
+      <div class="container hero__grid">
+
+        <div class="hero__content fade-up">
+          <div class="hero__eyebrow">
+            <div class="hero__eyebrow-dot" aria-hidden="true"></div>
+            <span class="section-label">DecodeLabs · Project 1 · 2026 Batch</span>
+          </div>
+
+          <h1 class="hero__title" id="hero-title">
+            Build the<br />
+            <em>Responsive</em><br />
+            Web.
+          </h1>
+
+          <p class="hero__desc">
+            Crafting digital interfaces that adapt beautifully to every screen —
+            from the 320px phone to the 4K monitor. Pure HTML, CSS &amp; JavaScript.
+            No frameworks. Just mastery.
+          </p>
+
+          <div class="hero__cta">
+            <a href="#services" class="btn btn-primary">Explore Skills</a>
+            <a href="#projects" class="btn btn-outline">View Projects</a>
+          </div>
+
+          <div class="hero__stats" role="list" aria-label="Key statistics">
+            <div role="listitem">
+              <div class="hero__stat-num">6</div>
+              <div class="hero__stat-label">Milestones</div>
+            </div>
+            <div role="listitem">
+              <div class="hero__stat-num">3</div>
+              <div class="hero__stat-label">Core Tools</div>
+            </div>
+            <div role="listitem">
+              <div class="hero__stat-num">∞</div>
+              <div class="hero__stat-label">Screens</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="hero__visual fade-up" style="transition-delay:.2s" aria-hidden="true">
+          <div class="hero__card">
+            <div class="hero__card-header">
+              <span class="hero__card-dot" style="background:#ff5f57"></span>
+              <span class="hero__card-dot" style="background:#febc2e"></span>
+              <span class="hero__card-dot" style="background:#28c840"></span>
+            </div>
+            <div class="hero__card-body">
+              <div class="hero__code-line"></div>
+              <div class="hero__code-line"></div>
+              <div class="hero__code-line"></div>
+              <div class="hero__code-line"></div>
+              <div class="hero__code-line"></div>
+              <div class="hero__code-line"></div>
+            </div>
+          </div>
+
+          <div class="hero__badge hero__badge--1">
+            <div class="hero__badge-icon" style="background:var(--blue)">📱</div>
+            <div>
+              <div style="font-size:.75rem;color:var(--grey-dark)">Breakpoint</div>
+              <div>Mobile First</div>
+            </div>
+          </div>
+
+          <div class="hero__badge hero__badge--2">
+            <div class="hero__badge-icon" style="background:rgba(165,133,110,.2)">✅</div>
+            <div>
+              <div style="font-size:.75rem;color:var(--grey-dark)">WCAG</div>
+              <div>Accessible</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- MARQUEE STRIP -->
+    <div class="strip" aria-hidden="true">
+      <div class="strip__track" id="stripTrack"></div>
+    </div>
+
+    <!-- ABOUT -->
+    <section class="about" id="about" aria-labelledby="about-title">
+      <div class="container about__grid">
+
+        <div class="about__img-wrap fade-up" aria-hidden="true">
+          <div class="about__img-box">🖥️</div>
+          <div class="about__img-card about__img-card--1">
+            <div class="about__card-value">100%</div>
+            <div class="about__card-label">Responsive</div>
+          </div>
+          <div class="about__img-card about__img-card--2">
+            <div class="about__card-value">A+</div>
+            <div class="about__card-label">Accessibility</div>
+          </div>
+        </div>
+
+        <div class="fade-up" style="transition-delay:.15s">
+          <span class="section-label">The Philosophy</span>
+          <h2 class="about__heading" id="about-title">
+            Architecture Before Aesthetics
+          </h2>
+          <p class="about__text">
+            The web is a dynamic, inclusive information system. Before connecting backend
+            databases, every full-stack developer must master the art of building flexible
+            frontends that work seamlessly on any device.
+          </p>
+          <p class="about__text">
+            Project 1 proves you can craft user-friendly experiences through pure responsive
+            logic — no shortcuts, no frameworks, only deep understanding.
+          </p>
+
+          <div class="about__pillars" role="list">
+            <article class="about__pillar" role="listitem">
+              <div class="about__pillar-title">Semantic Integrity</div>
+              <div class="about__pillar-text">Code for AI and Accessibility — the right element for every job.</div>
+            </article>
+            <article class="about__pillar" role="listitem">
+              <div class="about__pillar-title">2025 Aesthetics</div>
+              <div class="about__pillar-text">Warm, grounded visuals that shift away from sterile tech.</div>
+            </article>
+            <article class="about__pillar" role="listitem">
+              <div class="about__pillar-title">Universal Access</div>
+              <div class="about__pillar-text">Strict WCAG adherence — your code decides who sees the web.</div>
+            </article>
+            <article class="about__pillar" role="listitem">
+              <div class="about__pillar-title">Mobile-First</div>
+              <div class="about__pillar-text">Start single-column, expand with min-width media queries.</div>
+            </article>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- SERVICES / SKILLS -->
+    <section class="services" id="services" aria-labelledby="services-title">
+      <div class="container">
+        <header class="services__head fade-up">
+          <span class="section-label">The Toolkit</span>
+          <h2 id="services-title">Your Raw Materials</h2>
+          <p>Three fundamental technologies. No frameworks. Master the fundamentals first.</p>
+        </header>
+
+        <div class="services__grid" role="list">
+
+          <article class="service-card fade-up" role="listitem">
+            <span class="service-card__num" aria-hidden="true">01</span>
+            <div class="service-card__icon" aria-hidden="true">🏗️</div>
+            <h3 class="service-card__title">HTML5 — The Infrastructure</h3>
+            <p class="service-card__text">
+              Semantic landmarks and structural meaning. Not just divs, but the right element
+              for the right job. The bedrock of accessibility and SEO that screen readers and
+              AI depend on.
+            </p>
+            <div class="service-card__tags" aria-label="Related elements">
+              <span class="tag">header</span>
+              <span class="tag">nav</span>
+              <span class="tag">main</span>
+              <span class="tag">article</span>
+              <span class="tag">footer</span>
+            </div>
+          </article>
+
+          <article class="service-card fade-up" role="listitem" style="transition-delay:.1s">
+            <span class="service-card__num" aria-hidden="true">02</span>
+            <div class="service-card__icon" aria-hidden="true">🎨</div>
+            <h3 class="service-card__title">CSS3 — The Skin</h3>
+            <p class="service-card__text">
+              Responsive styling using Grid for macro page layouts and Flexbox for micro
+              components. Container Queries, clamp() for fluid typography, and custom
+              properties for theming.
+            </p>
+            <div class="service-card__tags" aria-label="Related techniques">
+              <span class="tag">CSS Grid</span>
+              <span class="tag">Flexbox</span>
+              <span class="tag">clamp()</span>
+              <span class="tag">@media</span>
+            </div>
+          </article>
+
+          <article class="service-card fade-up" role="listitem" style="transition-delay:.2s">
+            <span class="service-card__num" aria-hidden="true">03</span>
+            <div class="service-card__icon" aria-hidden="true">⚙️</div>
+            <h3 class="service-card__title">JavaScript — The Logic</h3>
+            <p class="service-card__text">
+              Basic state management and interactive functionality. DOM manipulation,
+              event listeners, IntersectionObserver for scroll-triggered animations, and
+              clean modular patterns.
+            </p>
+            <div class="service-card__tags" aria-label="Related concepts">
+              <span class="tag">DOM API</span>
+              <span class="tag">Events</span>
+              <span class="tag">State</span>
+              <span class="tag">Observer</span>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- PROCESS / ROADMAP -->
+    <section class="process" id="process" aria-labelledby="process-title">
+      <div class="container">
+        <header class="process__head fade-up">
+          <span class="section-label">The Execution Roadmap</span>
+          <h2 id="process-title">Six Steps to Completion</h2>
+          <p>A strategic framework from discovery to deployment — every step deliberate.</p>
+        </header>
+
+        <ol class="process__list" aria-label="Project execution steps">
+          <li class="process-step fade-up">
+            <div class="process-step__num" aria-hidden="true">1</div>
+            <div class="process-step__body">
+              <h3 class="process-step__title">Discovery</h3>
+              <p class="process-step__text">Define the "How Might We" question. Empathy maps to uncover user pain points. We do not guess; we research.</p>
+            </div>
+          </li>
+          <li class="process-step fade-up" style="transition-delay:.1s">
+            <div class="process-step__num" aria-hidden="true">2</div>
+            <div class="process-step__body">
+              <h3 class="process-step__title">Wireframe</h3>
+              <p class="process-step__text">Grayscale, mobile-first low-fidelity sketches. The golden rule: if it doesn't work in grayscale, color won't fix it.</p>
+            </div>
+          </li>
+          <li class="process-step fade-up" style="transition-delay:.2s">
+            <div class="process-step__num" aria-hidden="true">3</div>
+            <div class="process-step__body">
+              <h3 class="process-step__title">Semantics</h3>
+              <p class="process-step__text">Build the HTML landmark structure. Proper semantics provide a table of contents for screen readers and AI crawlers.</p>
+            </div>
+          </li>
+          <li class="process-step fade-up" style="transition-delay:.3s">
+            <div class="process-step__num" aria-hidden="true">4</div>
+            <div class="process-step__body">
+              <h3 class="process-step__title">Style</h3>
+              <p class="process-step__text">Apply CSS Grid/Flexbox layouts and the 2025 palette. Mocha Mousse, Ethereal Blue, Moonlit Grey. Max 2 font families.</p>
+            </div>
+          </li>
+          <li class="process-step fade-up" style="transition-delay:.4s">
+            <div class="process-step__num" aria-hidden="true">5</div>
+            <div class="process-step__body">
+              <h3 class="process-step__title">Logic</h3>
+              <p class="process-step__text">Add JavaScript state management and interactivity. Mobile nav toggle, scroll animations, dynamic UI components.</p>
+            </div>
+          </li>
+          <li class="process-step fade-up" style="transition-delay:.5s">
+            <div class="process-step__num" aria-hidden="true">6</div>
+            <div class="process-step__body">
+              <h3 class="process-step__title">Audit</h3>
+              <p class="process-step__text">LCP, CLS performance metrics and full WCAG accessibility compliance check before submission.</p>
+            </div>
+          </li>
+        </ol>
+
+      </div>
+    </section>
+
+    <!-- PROJECTS -->
+    <section class="projects" id="projects" aria-labelledby="projects-title">
+      <div class="container">
+        <header class="projects__head fade-up">
+          <span class="section-label">Portfolio Showcase</span>
+          <h2 id="projects-title">Featured Builds</h2>
+          <p>Real-world projects demonstrating responsive craft and frontend mastery.</p>
+        </header>
+
+        <div class="projects__grid" role="list">
+
+          <article class="project-card fade-up" role="listitem">
+            <div class="project-card__thumb" style="background:linear-gradient(135deg,#A0D4E0 0%,#6eb8ca 100%)">🛒</div>
+            <div class="project-card__body">
+              <div class="project-card__tags">
+                <span class="tag">HTML5</span>
+                <span class="tag">CSS Grid</span>
+              </div>
+              <h3 class="project-card__title">E-Commerce Landing Page</h3>
+              <p class="project-card__text">A fully responsive product showcase with adaptive grid layout, filter sidebar, and mobile-optimized cart drawer.</p>
+              <a href="#" class="project-card__link" aria-label="View E-Commerce Landing Page project">View Project →</a>
+            </div>
+          </article>
+
+          <article class="project-card fade-up" role="listitem" style="transition-delay:.1s">
+            <div class="project-card__thumb" style="background:linear-gradient(135deg,#A5856E 0%,#7a5f4e 100%)">📊</div>
+            <div class="project-card__body">
+              <div class="project-card__tags">
+                <span class="tag">JavaScript</span>
+                <span class="tag">Flexbox</span>
+              </div>
+              <h3 class="project-card__title">Analytics Dashboard</h3>
+              <p class="project-card__text">An interactive data dashboard with live-updating stat cards, responsive chart containers, and dark/light mode toggle.</p>
+              <a href="#" class="project-card__link" aria-label="View Analytics Dashboard project">View Project →</a>
+            </div>
+          </article>
+
+          <article class="project-card fade-up" role="listitem" style="transition-delay:.2s">
+            <div class="project-card__thumb" style="background:linear-gradient(135deg,#F2F0EA 0%,#d8d4cc 100%)">📝</div>
+            <div class="project-card__body">
+              <div class="project-card__tags">
+                <span class="tag">Semantic HTML</span>
+                <span class="tag">CSS3</span>
+              </div>
+              <h3 class="project-card__title">Blog & Article Platform</h3>
+              <p class="project-card__text">A content-first magazine layout with optimal reading typography, responsive images, and accessible article structure.</p>
+              <a href="#" class="project-card__link" aria-label="View Blog Platform project">View Project →</a>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- TESTIMONIALS -->
+    <section class="testimonials" id="testimonials" aria-labelledby="testi-title">
+      <div class="container">
+        <header class="testimonials__head fade-up">
+          <span class="section-label">Intern Voices</span>
+          <h2 id="testi-title">What Builders Say</h2>
+          <p>From DecodeLabs interns who completed Project 1 and unlocked the full stack journey.</p>
+        </header>
+
+        <div class="testimonials__grid" role="list">
+
+          <article class="testi-card fade-up" role="listitem">
+            <div class="testi-card__quote" aria-hidden="true">"</div>
+            <div class="testi-card__stars" aria-label="5 out of 5 stars">★★★★★</div>
+            <p class="testi-card__text">Project 1 forced me to truly understand the box model. After this, frameworks feel like cheating in the best way.</p>
+            <div class="testi-card__author">
+              <div class="testi-card__avatar" style="background:var(--blue)" aria-hidden="true">👩‍💻</div>
+              <div>
+                <div class="testi-card__name">Aisha Raza</div>
+                <div class="testi-card__role">Frontend Intern · Batch 2025</div>
+              </div>
+            </div>
+          </article>
+
+          <article class="testi-card fade-up" role="listitem" style="transition-delay:.1s">
+            <div class="testi-card__quote" aria-hidden="true">"</div>
+            <div class="testi-card__stars" aria-label="5 out of 5 stars">★★★★★</div>
+            <p class="testi-card__text">The mobile-first approach clicked for me here. I used to add mobile styles at the end — never again. Total mindset shift.</p>
+            <div class="testi-card__author">
+              <div class="testi-card__avatar" style="background:rgba(165,133,110,.25)" aria-hidden="true">👨‍💻</div>
+              <div>
+                <div class="testi-card__name">Hamza Sheikh</div>
+                <div class="testi-card__role">Full-Stack Intern · Batch 2025</div>
+              </div>
+            </div>
+          </article>
+
+          <article class="testi-card fade-up" role="listitem" style="transition-delay:.2s">
+            <div class="testi-card__quote" aria-hidden="true">"</div>
+            <div class="testi-card__stars" aria-label="5 out of 5 stars">★★★★★</div>
+            <p class="testi-card__text">Accessibility felt abstract until I saw my site in a screen reader. Semantic HTML is not optional — it's the foundation.</p>
+            <div class="testi-card__author">
+              <div class="testi-card__avatar" style="background:var(--grey-mid)" aria-hidden="true">👩‍💻</div>
+              <div>
+                <div class="testi-card__name">Zara Malik</div>
+                <div class="testi-card__role">UI Developer · Batch 2026</div>
+              </div>
+            </div>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA BAND -->
+    <section class="cta-band" id="contact" aria-labelledby="cta-title">
+      <div class="container cta-band__inner">
+        <h2 id="cta-title">You Are The Architect.</h2>
+        <p>Your code determines who has access to information and how the world experiences it. Open your IDE. Initialize the repository. Begin with the blueprint.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:1rem;justify-content:center">
+          <a href="#home" class="btn btn-primary" style="background:var(--white);color:var(--mocha)">Start Building ↑</a>
+          <a href="mailto:decodelabs.tech@gmail.com" class="btn btn-outline">Contact DecodeLabs</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ══════════ FOOTER ══════════ -->
+  <footer role="contentinfo">
+    <div class="container">
+      <div class="footer__grid">
+
+        <div>
+          <div class="footer__brand-name">Digital<span>Craft</span></div>
+          <p class="footer__brand-desc">
+            A DecodeLabs Project 1 submission — responsive frontend mastery through pure fundamentals.
+          </p>
+          <div class="footer__socials" aria-label="Social links">
+            <a href="#" class="footer__social" aria-label="GitHub">💻</a>
+            <a href="#" class="footer__social" aria-label="LinkedIn">🔗</a>
+            <a href="#" class="footer__social" aria-label="Twitter">🐦</a>
+          </div>
+        </div>
+
+        <nav aria-label="Footer navigation: Pages">
+          <div class="footer__col-title">Pages</div>
+          <ul class="footer__links" role="list">
+            <li><a href="#about">About</a></li>
+            <li><a href="#services">Skills</a></li>
+            <li><a href="#process">Roadmap</a></li>
+            <li><a href="#projects">Projects</a></li>
+          </ul>
+        </nav>
+
+        <nav aria-label="Footer navigation: Technologies">
+          <div class="footer__col-title">Tech</div>
+          <ul class="footer__links" role="list">
+            <li><a href="#services">HTML5</a></li>
+            <li><a href="#services">CSS3</a></li>
+            <li><a href="#services">JavaScript</a></li>
+            <li><a href="#process">Audit</a></li>
+          </ul>
+        </nav>
+
+      </div>
+
+      <div class="footer__bottom">
+        <p>© 2026 DigitalCraft · DecodeLabs Internship Project 1 · Batch 2026</p>
+        <div class="footer__bottom-links">
+          <a href="#">Privacy</a>
+          <a href="#">Terms</a>
+          <a href="mailto:decodelabs.tech@gmail.com">Contact</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- SCROLL TO TOP -->
+  <button class="scroll-top" id="scrollTop" aria-label="Scroll to top">↑</button>
+
+  <!-- ══════════ JAVASCRIPT ══════════ -->
+  <script>
+    // ─── NAV: scroll shadow + hamburger ───────────────
+    const navbar    = document.getElementById('navbar');
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobileMenu');
+
+    window.addEventListener('scroll', () => {
+      navbar.classList.toggle('scrolled', window.scrollY > 20);
+      scrollTopBtn.classList.toggle('show', window.scrollY > 400);
+    }, { passive: true });
+
+    hamburger.addEventListener('click', () => {
+      const isOpen = mobileMenu.classList.toggle('open');
+      hamburger.classList.toggle('active', isOpen);
+      hamburger.setAttribute('aria-expanded', isOpen);
+    });
+
+    function closeMobileMenu() {
+      mobileMenu.classList.remove('open');
+      hamburger.classList.remove('active');
+      hamburger.setAttribute('aria-expanded', 'false');
+    }
+
+    // ─── SCROLL-TO-TOP ─────────────────────────────────
+    const scrollTopBtn = document.getElementById('scrollTop');
+    scrollTopBtn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // ─── INTERSECTION OBSERVER: fade-up ───────────────
+    const fadeEls = document.querySelectorAll('.fade-up');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    fadeEls.forEach(el => observer.observe(el));
+
+    // ─── MARQUEE STRIP: build content ─────────────────
+    const stripItems = [
+      '🏗️ Semantic HTML5',
+      '🎨 CSS Grid & Flexbox',
+      '⚙️ Vanilla JavaScript',
+      '📱 Mobile-First Design',
+      '♿ WCAG Accessibility',
+      '🚀 Performance Audits',
+      '🖥️ Responsive Layouts',
+      '🎯 2025 UI/UX Standards',
+    ];
+    const track = document.getElementById('stripTrack');
+    // duplicate for seamless loop
+    [...stripItems, ...stripItems].forEach(item => {
+      const el = document.createElement('div');
+      el.className = 'strip__item';
+      el.innerHTML = `<span>${item}</span><span class="strip__dot">◆</span>`;
+      track.appendChild(el);
+    });
+
+    // ─── ACTIVE NAV LINK on scroll ────────────────────
+    const sections  = document.querySelectorAll('section[id]');
+    const navLinks  = document.querySelectorAll('.nav__links a');
+
+    const sectionObs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.getAttribute('id');
+          navLinks.forEach(link => {
+            link.style.color = link.getAttribute('href') === `#${id}`
+              ? 'var(--mocha)' : '';
+          });
+        }
+      });
+    }, { threshold: 0.5 });
+
+    sections.forEach(s => sectionObs.observe(s));
+  </script>
+
+</body>
+</html>
